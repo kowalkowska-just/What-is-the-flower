@@ -24,8 +24,15 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <navigationItem key="navigationItem" id="YLP-Xg-HLZ">
-                        <barButtonItem key="rightBarButtonItem" systemItem="camera" id="Ggy-GK-E9K"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="camera" id="Ggy-GK-E9K">
+                            <connections>
+                                <action selector="tappedCamera:" destination="BYZ-38-t0r" id="a5m-76-di4"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="flowerImage" destination="I0x-BS-8QF" id="Rcx-6W-RFV"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
