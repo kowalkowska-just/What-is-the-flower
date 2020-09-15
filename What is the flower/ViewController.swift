@@ -17,6 +17,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     let wikipediaURl = "https://en.wikipedia.org/w/api.php"
     
     @IBOutlet weak var flowerImage: UIImageView!
+    @IBOutlet weak var labelDescription: UILabel!
     
     let imagePicker = UIImagePickerController()
     
@@ -86,6 +87,12 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             if response.result.isSuccess {
                 print("Got the wikipedia info.")
                 print(response)
+
+                let flowerJSON : JSON = JSON(response.result.value!)
+                let pageid = flowerJSON["query"]["pegeid"][0].stringValue
+                let flowerDescription = flowerJSON["query"]["pages"][pageid]["extract"].stringValue
+                
+                self.labelDescription.text = flowerDescription
             }
         }
     }
