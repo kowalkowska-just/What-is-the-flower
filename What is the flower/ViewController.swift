@@ -14,6 +14,8 @@ import SwiftyJSON
 
 class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
+    let wikipediaURl = "https://en.wikipedia.org/w/api.php"
+    
     @IBOutlet weak var flowerImage: UIImageView!
     
     let imagePicker = UIImagePickerController()
@@ -50,19 +52,12 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         
         let request = VNCoreMLRequest(model: model) { (request, error) in
             
-            let classification = request.results?.first as? VNClassificationObservation
+            guard let classification = request.results?.first as? VNClassificationObservation else {
+                fatalError("Could not classify image.")
+            }
         
-            self.navigationItem.title = classification?.identifier.capitalized
-            
-            
-            
-//            if let firstResult = results.first {
-//                if firstResult.identifier.contains("hotdog") {
-//                    self.navigationItem.title = "Hotdog!"
-//                } else {
-//                    self.navigationItem.title = "Not Hotdog!"
-//                }
-//            }
+            self.navigationItem.title = classification.identifier.capitalized
+            self.requestInfo(flowerName: classification.identifier)
         }
             
         let handler = VNImageRequestHandler(ciImage: flowerImage)
@@ -74,7 +69,28 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         }
     }
     
-    
+    func requestInfo(flowerName: String) {
+        
+        let parameters : [String:String] = [
+        "format" : "json",
+        "action" : "query",
+        "prop" : "extracts",
+        "exintro" : "",
+        "explaintext" : "",
+        "titles" : flowerName,
+        "indexpageids" : "",
+        "redirects" : "1",
+        ]
+        
+        Alamofire.request(wikipediaURl, method: .get, parameters: parameters).responseJSON { (response) in
+            if response.result.isSuccess {
+                print("Got the wikipedia info.")
+                print(response)
+            }
+        }
+    }
+
+
     @IBAction func tappedCamera(_ sender: UIBarButtonItem) {
         
         present(imagePicker, animated: true, completion: nil)
