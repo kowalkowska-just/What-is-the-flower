@@ -7,6 +7,10 @@
 //
 
 import UIKit
+import CoreML
+import Vision
+import Alamofire
+import SwiftyJSON
 
 class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
@@ -19,7 +23,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         
         imagePicker.delegate = self
         imagePicker.sourceType = .camera
-        imagePicker.allowsEditing = false
+        imagePicker.allowsEditing = true
     }
 
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
@@ -28,14 +32,47 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             
             flowerImage.image = userPickerImage
             
-            guard let ciImage = CIImage(image: userPickerImage) else {
+            guard let convertedUIImage = CIImage(image: userPickerImage) else {
                 fatalError("Could not convert to CIImage.")
             }
+            
+            detect(flowerImage: convertedUIImage)
         }
         
         imagePicker.dismiss(animated: true, completion: nil)
     }
     
+    func detect(flowerImage: CIImage) {
+        
+        guard let model = try? VNCoreMLModel(for: FlowerClassifier().model) else {
+            fatalError("Loading CoreML Model Failed.")
+        }
+        
+        let request = VNCoreMLRequest(model: model) { (request, error) in
+            
+            let classification = request.results?.first as? VNClassificationObservation
+        
+            self.navigationItem.title = classification?.identifier.capitalized
+            
+            
+            
+//            if let firstResult = results.first {
+//                if firstResult.identifier.contains("hotdog") {
+//                    self.navigationItem.title = "Hotdog!"
+//                } else {
+//                    self.navigationItem.title = "Not Hotdog!"
+//                }
+//            }
+        }
+            
+        let handler = VNImageRequestHandler(ciImage: flowerImage)
+        
+        do {
+            try handler.perform([request])
+        } catch {
+            print(error)
+        }
+    }
     
     
     @IBAction func tappedCamera(_ sender: UIBarButtonItem) {
