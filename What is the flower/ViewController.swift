@@ -89,8 +89,13 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                 print(response)
 
                 let flowerJSON : JSON = JSON(response.result.value!)
-                let pageid = flowerJSON["query"]["pegeid"][0].stringValue
+                //print("FloweJSON: \(flowerJSON)")
+                
+                let pageid = flowerJSON["query"]["pageids"][0].stringValue
+                //print("Pageid: \(pageid)")
+                
                 let flowerDescription = flowerJSON["query"]["pages"][pageid]["extract"].stringValue
+                //print("FlowerDescription: \(flowerDescription)")
                 
                 self.labelDescription.text = flowerDescription
             }
